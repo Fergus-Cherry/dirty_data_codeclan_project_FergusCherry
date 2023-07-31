@@ -1,0 +1,58 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+decathlon <- read_csv(here("clean_data/decathlon.csv"))
+```
+
+## 1
+```{r}
+decathlon %>% 
+  filter(sport == "long_jump") %>% 
+  slice_max(sport_score) %>% 
+  select(name, sport, sport_score)
+```
+
+## 2
+I'm assuming average here means the mean.
+```{r}
+decathlon %>% 
+  filter(sport == "100m") %>% 
+  group_by(competition) %>% 
+  summarise('avg_time(s)' = mean(sport_score))
+```
+
+## 3
+```{r}
+decathlon %>% 
+  group_by(name) %>% 
+  summarise("total_points" = sum(points)) %>% 
+  slice_max(total_points)
+```
+
+## 4
+```{r}
+decathlon %>% 
+  filter(sport == "shot_put") %>% 
+  group_by(competition) %>% 
+  slice_max(sport_score, n = 3) %>% 
+  select(name, competition, sport, sport_score)
+```
+
+## 5
+Again, I'm assuming average here means the mean.
+```{r}
+decathlon %>% 
+  filter(sport == "400m") %>% 
+  mutate(faster_than_50s = sport_score < 50) %>% 
+  group_by(faster_than_50s) %>% 
+  summarise(avg_points = mean(points))
+```
+
