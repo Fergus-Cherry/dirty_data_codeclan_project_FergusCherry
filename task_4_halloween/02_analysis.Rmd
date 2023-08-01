@@ -1,0 +1,27 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+candy <- read_csv("clean_data/candy.csv")
+
+```
+
+
+## 1
+```{r}
+nrow(candy)
+```
+
+## 2
+```{r}
+candy %>% 
+  filter(going == TRUE) %>% 
+  summarise(avg_age = mean(age))
+```
+
