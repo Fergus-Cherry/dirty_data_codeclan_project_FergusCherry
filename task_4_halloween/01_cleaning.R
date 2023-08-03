@@ -91,10 +91,50 @@ candy <- bind_rows(candy_2015, candy_2016, candy_2017)
 
 candy <- candy %>% 
   mutate(age = as.numeric(age)) %>% 
-  mutate(age = case_when(
+  mutate(
+    age = case_when(
     age < 2 ~ NA,
-    age < 125 ~ NA,
+    age > 125 ~ NA,
+    .default = age
+  ),
+  going = case_match(going,
+    "Yes" ~ TRUE,
+    "No" ~ FALSE,
     .default = NA
+  )
+  )
+
+candy <- candy %>% 
+  mutate(country = str_to_lower(country)) %>% 
+  mutate(country = str_remove_all(country, "[.!'?`]")) %>% 
+  mutate(country = str_replace_all(country, "  ", " ")) %>% 
+  mutate(country = case_when(
+    str_detect(country, "^usa ") ~ "usa",
+    str_detect(country, "united s") ~ "usa",
+    str_detect(country, "united k") ~ "uk",
+    str_detect(country, "^[a-z]$") ~ NA,
+    !is.na(as.numeric(country)) ~ NA,
+    .default = country
+  )) %>% 
+  mutate(country = case_match(
+    country,
+    "us" ~ "usa",
+    "usausausa" ~ "usa",
+    "u s a" ~ "usa",
+    "u s" ~ "usa",
+    "ussa" ~ "usa",
+    "us of a" ~ "usa",
+    "unites states" ~ "usa",
+    "units states" ~ "usa",
+    "america" ~ "usa",
+    "murica" ~ "usa",
+    "merica" ~ "usa",
+    "murrika" ~ "usa",
+    "españa" ~ "spain",
+    "endland" ~ "uk",
+    "england" ~ "uk",
+    "scotland" ~ "uk",
+    .default = country
   ))
 
 write_csv(candy, file = "clean_data/candy.csv")

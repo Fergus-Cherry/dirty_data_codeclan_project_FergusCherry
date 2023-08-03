@@ -22,6 +22,81 @@ nrow(candy)
 ```{r}
 candy %>% 
   filter(going == TRUE) %>% 
-  summarise(avg_age = mean(age))
+  distinct(id, .keep_all = TRUE) %>% 
+  summarise(avg_age = mean(age, na.rm = TRUE))
+```
+
+## 3
+```{r}
+candy %>% 
+  filter(going == FALSE) %>% 
+  distinct(id, .keep_all = TRUE) %>% 
+  summarise(avg_age = mean(age, na.rm = TRUE))
+```
+
+## 4
+```{r}
+candy %>% 
+  group_by(question) %>% 
+  summarise(
+    despair = sum(response == "DESPAIR"),
+    joy = sum(response == "JOY"),
+    meh = sum(response == "MEH")) %>% 
+  mutate(
+    max_despair = max(despair),
+    max_joy = max(joy),
+    max_meh = max(meh)
+    ) %>% 
+  filter(
+    max_despair == despair |
+      max_joy == joy |
+      max_meh == meh
+  ) %>% 
+  select(question, joy, despair, meh)
+```
+
+## 5
+```{r}
+candy %>% 
+  filter(question == "starburst") %>% 
+  summarise(starburst_haters = sum(response == "DESPAIR"))
+```
+
+## 6
+```{r}
+candy %>% 
+  group_by(gender, question) %>% 
+  summarise(popularity = sum(response == "JOY") - sum(response == "DESPAIR")) %>% 
+  mutate(most_popular = max(popularity)) %>% 
+  filter(popularity == most_popular) %>% 
+  select(gender, question, popularity)
+```
+
+## 7
+```{r}
+candy %>% 
+  group_by(year, question)%>% 
+  summarise(popularity = sum(response == "JOY") - sum(response == "DESPAIR")) %>% 
+  mutate(most_popular = max(popularity)) %>% 
+  filter(popularity == most_popular) %>% 
+  select(year, question, popularity)
+```
+
+## 8
+```{r}
+candy_country <- candy %>% 
+  distinct(id, .keep_all = TRUE) %>% 
+  group_by(country) %>% 
+  summarise(individuals = n()) %>% 
+  filter(individuals > 5) %>% 
+  pull(country)
+
+candy %>% 
+  filter(country %in% candy_country) %>% 
+  group_by(country, question) %>% 
+  summarise(popularity = sum(response == "JOY") - sum(response == "DESPAIR")) %>% 
+  mutate(most_popular = max(popularity)) %>% 
+  filter(popularity == most_popular) %>% 
+  select(country, question, popularity)
 ```
 
