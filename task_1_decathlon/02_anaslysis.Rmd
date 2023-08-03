@@ -1,6 +1,11 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Decathlon data"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
 ---
 
 ```{r}
@@ -12,7 +17,10 @@ library(here)
 decathlon <- read_csv(here("clean_data/decathlon.csv"))
 ```
 
-## 1
+The only alteration made to the data here is to make the column names
+more usable and to change the format for ease of analysis.
+
+## 1 Who had the longest long jump seen in the data?
 ```{r}
 decathlon %>% 
   filter(sport == "long_jump") %>% 
@@ -20,7 +28,7 @@ decathlon %>%
   select(name, sport, sport_score)
 ```
 
-## 2
+## 2 What was the average 100m time in each competition?
 I'm assuming average here means the mean.
 ```{r}
 decathlon %>% 
@@ -29,7 +37,7 @@ decathlon %>%
   summarise('avg_time(s)' = mean(sport_score))
 ```
 
-## 3
+## 3 Who had the highest total points across both competitions?
 ```{r}
 decathlon %>% 
   group_by(name) %>% 
@@ -37,7 +45,7 @@ decathlon %>%
   slice_max(total_points)
 ```
 
-## 4
+## 4 What was the shot-put scores for the top three competitors in each competition?
 ```{r}
 decathlon %>% 
   filter(sport == "shot_put") %>% 
@@ -46,7 +54,7 @@ decathlon %>%
   select(name, competition, sport, sport_score)
 ```
 
-## 5
+## 5 What was the average points for competitors who ran the 400m in less than 50 seconds vs. those than ran 400m in more than 50 seconds?
 Again, I'm assuming average here means the mean.
 ```{r}
 decathlon %>% 
