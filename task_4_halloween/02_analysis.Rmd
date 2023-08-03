@@ -1,6 +1,11 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Halloween Action Data"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
 ---
 
 ```{r}
@@ -11,14 +16,24 @@ library(tidyverse)
 candy <- read_csv("clean_data/candy.csv")
 
 ```
+## Cleaning and assumptions
 
+It was assumed that 'candy' was being used to refer to anything
+received while trick or treating.
+It was also assumed that anything not in the above category or
+specified later was to be unnecessary, and could be dropped.
+For any responses which did not take the expected form, for example
+text responses when asked their age, it was assumed that the respondent
+didn't wish to answer the question.
+As a continuation of this, any countries given which were not obviously
+alternate names or misspellings are left as given.
 
-## 1
+## 1 What is the total number of candy ratings given across the three years?
 ```{r}
 nrow(candy)
 ```
 
-## 2
+## 2 What was the average age of people who are going out trick or treating?
 ```{r}
 candy %>% 
   filter(going == TRUE) %>% 
@@ -26,7 +41,7 @@ candy %>%
   summarise(avg_age = mean(age, na.rm = TRUE))
 ```
 
-## 3
+## 3 What was the average age of people who are not going trick or treating?
 ```{r}
 candy %>% 
   filter(going == FALSE) %>% 
@@ -34,7 +49,7 @@ candy %>%
   summarise(avg_age = mean(age, na.rm = TRUE))
 ```
 
-## 4
+## 4 For each of joy, despair and meh, which candy bar received the most of these ratings?
 ```{r}
 candy %>% 
   group_by(question) %>% 
@@ -55,14 +70,16 @@ candy %>%
   select(question, joy, despair, meh)
 ```
 
-## 5
+## 5 How many people rated Starburst as despair?
 ```{r}
 candy %>% 
   filter(question == "starburst") %>% 
   summarise(starburst_haters = sum(response == "DESPAIR"))
 ```
+## rating system
+count despair as -1, joy as +1, and meh as 0.
 
-## 6
+## 6 What was the most popular candy bar by this rating system for each gender in the dataset ?
 ```{r}
 candy %>% 
   group_by(gender, question) %>% 
@@ -72,7 +89,7 @@ candy %>%
   select(gender, question, popularity)
 ```
 
-## 7
+## 7 What was the most popular candy bar in each year?
 ```{r}
 candy %>% 
   group_by(year, question)%>% 
@@ -82,7 +99,10 @@ candy %>%
   select(year, question, popularity)
 ```
 
-## 8
+## 8 What was the most popular candy bar by this rating for people in US, Canada, UK, and all other countries?
+Here, an assumption was made that countries with fewer than 6
+respondents were not represented in the data, and were not included.
+
 ```{r}
 candy_country <- candy %>% 
   distinct(id, .keep_all = TRUE) %>% 
